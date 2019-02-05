@@ -5,37 +5,22 @@ import { MDBBtn,
         MDBRow, 
         MDBCol, 
         MDBContainer, 
-        MDBIcon, 
-        MDBModal, 
-        MDBModalHeader,
-        MDBModalBody,
-        MDBModalFooter} from "mdbreact";
+        MDBIcon} from "mdbreact";
 
 import {Link} from "react-router-dom";
 import {saveProvider, editProvider, selectProvider} from './ProviderFunctions';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 
 class NewProvider extends Component {
 
     state = {
-        openModal : false,
-        modalStyle: {},
         selectedId: null,
         selectedProvider : {}
     }
 
-    modalSuccessStyle = {
-        icon: 'check-circle',
-        title: 'Guardado con Exito',
-        style: 'success',
-        iconColor: 'green-text',
-    }
-    modalErrorStyle = {
-        icon: 'times-circle',
-        title: 'Error del Servidor',
-        style: 'danger',
-        iconColor: 'red-text',
-    }
+    mySwal = withReactContent(Swal);
 
     companyRef = React.createRef();
     addressRef = React.createRef();
@@ -52,8 +37,7 @@ class NewProvider extends Component {
             });
         },(err)=>{
             console.log(err);
-        })
-          
+        })    
     }
 
     saveProvider = (e) => {
@@ -71,41 +55,49 @@ class NewProvider extends Component {
         if (this.state.selectedId) {
             editProvider(provider, this.state.selectedId).then((res)=>{
                 console.log('Updated', res);
-                this.setState({
-                    openModal: true,
-                    modalStyle: this.modalSuccessStyle,
-                });
+                this.mySwal.fire({
+                    title:'Proveedor Guardado!',
+                    type: 'success',
+                    text: res.data.company,
+                    confirmButtonText: 'Ok'
+                }).then(()=>{
+                    this.props.history.push('/providers');
+                }); 
+
             },(err)=>{
                 console.log(err);
-                this.setState({
-                    openModal: true,
-                    modalStyle: this.modalErrorStyle,
+                this.mySwal.fire({
+                    title:'Error!',
+                    type: 'error',
+                    text: 'Error del Servidor',
+                    confirmButtonText: 'Ok'
                 });
-    
             });
+
         } else {
             saveProvider(provider).then((res)=>{
                 console.log('Saved', res);
-                this.setState({
-                    openModal: true,
-                    modalStyle: this.modalSuccessStyle,
+                this.mySwal.fire({
+                    title:'Proveedor Guardado!',
+                    type: 'success',
+                    text: res.data.company,
+                    confirmButtonText: 'Ok'
+                }).then(()=>{
+                    this.props.history.push('/providers');
                 });
+
             },(err)=>{
                 console.log(err);
-                this.setState({
-                    openModal: true,
-                    modalStyle: this.modalErrorStyle,
-                });
+                this.mySwal.fire({
+                    title:'Error!',
+                    type: 'error',
+                    text: 'Error del Servidor',
+                    confirmButtonText: 'Ok'
+                }); 
             });
-        }
+        };
     }
-        
 
-    toggleModal = () => {
-        this.setState({
-            openModal : !this.state.openModal
-        })
-    }
     render() {
         return (
             <MDBContainer>
@@ -114,11 +106,14 @@ class NewProvider extends Component {
                         <MDBCard>
                             <MDBCardBody>
                                 <h3 className="text-center"> Proveedor</h3>
+
                                 <form autoComplete="off" onSubmit={this.saveProvider} className="grey-text">
+
                                     <div className="form-group">
                                         <label><MDBIcon icon="industry" size=""/> Empresa</label>
                                         <input  defaultValue={this.state.selectedProvider.company} ref={this.companyRef} type="text" className="form-control"/>
                                     </div>
+
                                     <div className="form-group">
                                         <label><MDBIcon icon="map-marked-alt"/> Direccion</label>
                                         <input defaultValue={this.state.selectedProvider.address}  ref={this.addressRef} type="text" className="form-control"/>
@@ -149,7 +144,7 @@ class NewProvider extends Component {
 
                                     <MDBRow center className="mt-3">
                                         <MDBBtn type="submit" color="mdb-color"> Guardar</MDBBtn>
-                                        <Link to="/providers"><MDBBtn type="reset" color="dark"> Cancelar</MDBBtn></Link>
+                                        <Link to="/providers"><MDBBtn type="reset" color="dark"> Volver</MDBBtn></Link>
                                     </MDBRow>
                                     
                                 </form>
@@ -157,17 +152,7 @@ class NewProvider extends Component {
                         </MDBCard>
                     </MDBCol>
                 </MDBRow>
-
-                <MDBModal modalStyle={this.state.modalStyle.style} isOpen={this.state.openModal} toggle={this.toggleModal} centered>
-                    <MDBModalHeader titleClass="w-100 font-weight-bolder" toggle={this.toggleModal}>{this.state.modalStyle.title}</MDBModalHeader>
-                    <MDBModalBody className="text-center">
-                        <MDBIcon className={this.state.modalStyle.iconColor} icon={this.state.modalStyle.icon} size="5x"/>
-                    </MDBModalBody>
-                    <MDBModalFooter>
-                        <Link to="/providers"><MDBBtn color={this.state.modalStyle.style}>Ok</MDBBtn></Link>
-                    </MDBModalFooter>
-                </MDBModal>
-
+                
             </MDBContainer>
         );
     }

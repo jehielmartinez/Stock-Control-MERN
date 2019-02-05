@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { MDBBtn, MDBIcon, MDBTooltip, MDBRow, MDBModal, MDBModalHeader, MDBModalBody, MDBModalFooter } from "mdbreact";
+import { MDBBtn, MDBIcon, MDBTooltip, MDBRow} from "mdbreact";
 import {Link} from "react-router-dom";
 import ReactTable from "react-table";
 import './Providers.css'
 import 'react-table/react-table.css';
 import {getProviders, deleteProvider} from './ProviderFunctions';
+import Swal from 'sweetalert2';
 
 
 
@@ -40,15 +41,31 @@ class ProvidersTable extends Component {
         selectedId: '',
         data: [],
         openModal: false,
-        isSelected: false
+        isSelected: false,
+        modalStyle: {},
       };
+      
+      modalSelectStyle = {
+        icon: 'exclamation-circle',
+        title: 'Seleccione un Proveedor',
+        style: 'warning',
+        iconColor: 'amber-text',
+        link: '/providers'
+    }
+        modalWarningStyle = {
+        icon: 'question-circle',
+        title: 'Esta Seguro de Eliminar?',
+        style: 'warning',
+        iconColor: 'amber-text',
+        link: '/providers'
+    }
 
       toggleModal = () => {
         this.setState({
             openModal : !this.state.openModal
         })}
 
-      componentDidMount(){
+        componentDidMount(){
          this.getProviders();
         }
 
@@ -57,7 +74,7 @@ class ProvidersTable extends Component {
                 console.log('Providers', res.data.allProviders);
                 this.setState({
                     data : res.data.allProviders
-                })
+                });
             }).catch((err) => {
                 console.log(err);
             });
@@ -69,16 +86,42 @@ class ProvidersTable extends Component {
             if (typeof data[selected] !== 'undefined'){
                 const id =  data[selected]._id;
 
-                deleteProvider(id).then((res)=>{
-                    console.log('Deleted!', res);
-                    this.getProviders();
-                })
-                .catch((err)=>{
-                    console.log(err);
+                Swal.fire({
+                    title: 'Estas Seguro?',
+                    text: "No podras recuperarlo!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonText: 'Eliminar'
+                  }).then((result) => {
+                    if (result.value) {
+                        deleteProvider(id).then((res)=>{
+                            console.log('Deleted!', res);
+                            Swal.fire({
+                                title: 'Proveedor Eliminado',
+                                type: 'success',
+                                confirmButtonText: 'Ok'
+                            }).then(()=>{
+                                this.getProviders();
+                            });
+                            
+                        })
+                        .catch((err)=>{
+                            console.log(err);
+                        });
+                    }
                 });
+
+                
             } else {
-                this.setState({
-                    openModal : true 
+                Swal.fire({
+                    title: 'Escoja un Proveedor',
+                    type: 'info',
+                    confirmButtonText: 'Ok'
+                }).then(()=>{
+                    this.getProviders();
                 });
             }    
         }
@@ -90,6 +133,7 @@ class ProvidersTable extends Component {
 
                 <div className="d-flex justify-content-between">
                     <h2 className="mt-3">Proveedores</h2>
+
                     <MDBRow>
                         <Link to={'/providers/new'}>
                             <MDBTooltip
@@ -127,7 +171,6 @@ class ProvidersTable extends Component {
                                     <MDBIcon icon="trash"  className="mr-1" />
                                 </MDBBtn>
                         </MDBTooltip>
-
                     </MDBRow>  
                 </div>
             
@@ -159,15 +202,6 @@ class ProvidersTable extends Component {
                             return {}
                         }}}/>
 
-                    <MDBModal modalStyle='warning' isOpen={this.state.openModal} toggle={this.toggleModal} centered>
-                        <MDBModalHeader titleClass="w-100 font-weight-bolder" toggle={this.toggleModal}>Escoja un Proveedor</MDBModalHeader>
-                            <MDBModalBody className="text-center">
-                                <MDBIcon className="amber-text" icon="exclamation-circle" size="5x"/>
-                            </MDBModalBody>
-                        <MDBModalFooter>
-                            <MDBBtn onClick={this.toggleModal} color='warning'>Ok</MDBBtn>
-                        </MDBModalFooter>
-                    </MDBModal>
             </div>
         );
     }

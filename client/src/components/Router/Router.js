@@ -3,8 +3,8 @@ import {Route, Switch, Redirect} from 'react-router-dom';
 
 import Sidenav from '../Sidenav/Sidenav';
 import NewItem from '../NewItem/NewItem';
-import NewProvider from '../NewProvider/NewProvider';
-import ProvidersTable from '../NewProvider/ProvidersTable';
+import NewProvider from '../Providers/NewProvider';
+import ProvidersTable from '../Providers/ProvidersTable';
  
 class Router extends Component {
     state = {
