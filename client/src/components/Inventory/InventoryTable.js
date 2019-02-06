@@ -2,39 +2,37 @@ import React, { Component } from 'react';
 import { MDBBtn, MDBIcon, MDBTooltip, MDBRow} from "mdbreact";
 import {Link} from "react-router-dom";
 import ReactTable from "react-table";
-import './Providers.css'
 import 'react-table/react-table.css';
-import {getProviders, deleteProvider} from './ProviderFunctions';
-import Swal from 'sweetalert2';
+import swal from 'sweetalert2';
+import './Inventory.css';
+import {getItems, deleteItem} from './InventoryFunctions';
 
-
-
-class ProvidersTable extends Component {
+class InventoryTable extends Component {
     state = {
         columns : [
             {
-                Header: <h5>Empresa</h5>,
-                accessor: 'company',
+                Header: <h5>Descripcion</h5>,
+                accessor: 'description',
             },
             {
-                Header: <h5>Direccion</h5>,
-                accessor: 'address'
+                Header: <h5>Proveedor</h5>,
+                accessor: 'provider'
             },
             {
-                Header: <h5>Contacto</h5>,
-                accessor: 'contact'
+                Header: <h5>Unidades</h5>,
+                accessor: 'units'
             },
             {
-                Header: <h5>Celular</h5>,
-                accessor: 'mobile'
+                Header: <h5>Tipo</h5>,
+                accessor: 'type'
             },
             {
-                Header: <h5>Email</h5>,
-                accessor: 'email'
+                Header: <h5>Existencia</h5>,
+                accessor: 'stock'
             },
             {
-                Header: <h5>Telefono</h5>,
-                accessor: 'phone'
+                Header: <h5>Porcentaje</h5>,
+                accessor: 'percentage'
             },
         ],
         selected: null,
@@ -43,67 +41,67 @@ class ProvidersTable extends Component {
         isSelected: false
       };
 
-        componentDidMount(){
-         this.getProviders();
-        }
+      componentDidMount(){
+          this.getInventory();
+      }
 
-        getProviders = () => {
-            getProviders().then((res) => {
-                console.log('Providers', res.data.allProviders);
-                this.setState({
-                    data : res.data.allProviders,
-                    isSelected: false
-                });
-            }).catch((err) => {
-                console.log(err);
+      getInventory = () => {
+        getItems().then((response)=>{
+            console.log(response.data.items);
+            this.setState({
+                data : response.data.items,
+                isSelected: false
+            });
+        },(err)=>{
+            console.log(err);
+        })
+      };
+
+      deleteItem = () => {
+        const selected = this.state.selected;
+        const data = this.state.data;
+        if (typeof data[selected] !== 'undefined'){
+            const id =  data[selected]._id;
+
+            swal.fire({
+                title: 'Estas Seguro?',
+                text: "No podras recuperarlo!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Eliminar'
+              }).then((result) => {
+                if (result.value) {
+                    deleteItem(id).then((res)=>{
+                        console.log('Deleted!', res);
+                        swal.fire({
+                            title: 'Elemento Eliminado',
+                            type: 'success',
+                            confirmButtonText: 'Ok'
+                        }).then(()=>{
+                            this.getInventory();
+                        });
+                        
+                    })
+                    .catch((err)=>{
+                        console.log(err);
+                    });
+                }
+            });
+
+            
+        } else {
+            swal.fire({
+                title: 'Escoja un Proveedor',
+                type: 'info',
+                confirmButtonText: 'Ok'
+            }).then(()=>{
+                this.getInventory();
             });
         }
-
-        deleteProvider = () => {
-            const selected = this.state.selected;
-            const data = this.state.data;
-            if (typeof data[selected] !== 'undefined'){
-                const id =  data[selected]._id;
-
-                Swal.fire({
-                    title: 'Estas Seguro?',
-                    text: "No podras recuperarlo!",
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    cancelButtonText: 'Cancelar',
-                    confirmButtonText: 'Eliminar'
-                  }).then((result) => {
-                    if (result.value) {
-                        deleteProvider(id).then((res)=>{
-                            console.log('Deleted!', res);
-                            Swal.fire({
-                                title: 'Proveedor Eliminado',
-                                type: 'success',
-                                confirmButtonText: 'Ok'
-                            }).then(()=>{
-                                this.getProviders();
-                            });
-                            
-                        })
-                        .catch((err)=>{
-                            console.log(err);
-                        });
-                    }
-                });
-
-                
-            } else {
-                Swal.fire({
-                    title: 'Escoja un Proveedor',
-                    type: 'info',
-                    confirmButtonText: 'Ok'
-                }).then(()=>{
-                    this.getProviders();
-                });
-            }    
-        }
+      }
 
     render() {
         let {columns, data} = this.state
@@ -111,10 +109,10 @@ class ProvidersTable extends Component {
             <div className="container mt-3">
 
                 <div className="d-flex justify-content-between">
-                    <h2 className="mt-3">Proveedores</h2>
+                    <h2 className="mt-3">Inventario</h2>
 
                     <MDBRow>
-                        <Link to={'/providers/new'}>
+                        <Link to={'/inventory/new'}>
                             <MDBTooltip
                                 placement="top"
                                 tooltipContent="Nuevo">
@@ -127,12 +125,12 @@ class ProvidersTable extends Component {
                         <MDBTooltip
                             placement="top"
                             tooltipContent="Refrescar">
-                                <MDBBtn onClick={this.getProviders} color="cyan" >
+                                <MDBBtn onClick={this.getInventory} color="cyan" >
                                     <MDBIcon icon="sync"  className="mr-1" />
                                 </MDBBtn>
                         </MDBTooltip>
 
-                        <Link to={this.state.isSelected ? `/providers/edit/${this.state.selectedId}` : '/providers/new'}>
+                        <Link to={this.state.isSelected ? `/inventory/edit/${this.state.selectedId}` : '/inventory/new'}>
                         <MDBTooltip
                             placement="top"
                             tooltipContent="Editar">
@@ -146,7 +144,7 @@ class ProvidersTable extends Component {
                         <MDBTooltip
                             placement="top"
                             tooltipContent="Eliminar">
-                                <MDBBtn onClick={this.deleteProvider} color="brown" >
+                                <MDBBtn onClick={this.deleteItem} color="brown" >
                                     <MDBIcon icon="trash"  className="mr-1" />
                                 </MDBBtn>
                         </MDBTooltip>
@@ -186,4 +184,4 @@ class ProvidersTable extends Component {
     }
 }
 
-export default ProvidersTable;
+export default InventoryTable;

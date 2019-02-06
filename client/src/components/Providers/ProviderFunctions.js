@@ -12,6 +12,7 @@ export function saveProvider(provider){
     return axios.post(`${endpoint}/providers/saveprovider`, {provider});
   }
 
+  //Edit Provider
 export function editProvider(provider, id){
     return axios.post(`${endpoint}/providers/edit/${id}`, {provider});
 }

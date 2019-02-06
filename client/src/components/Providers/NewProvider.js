@@ -9,9 +9,7 @@ import { MDBBtn,
 
 import {Link} from "react-router-dom";
 import {saveProvider, editProvider, selectProvider} from './ProviderFunctions';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-
+import swal from 'sweetalert2';
 
 class NewProvider extends Component {
 
@@ -19,8 +17,6 @@ class NewProvider extends Component {
         selectedId: null,
         selectedProvider : {}
     }
-
-    mySwal = withReactContent(Swal);
 
     companyRef = React.createRef();
     addressRef = React.createRef();
@@ -55,7 +51,7 @@ class NewProvider extends Component {
         if (this.state.selectedId) {
             editProvider(provider, this.state.selectedId).then((res)=>{
                 console.log('Updated', res);
-                this.mySwal.fire({
+                swal.fire({
                     title:'Proveedor Guardado!',
                     type: 'success',
                     text: res.data.company,
@@ -66,7 +62,7 @@ class NewProvider extends Component {
 
             },(err)=>{
                 console.log(err);
-                this.mySwal.fire({
+                swal.fire({
                     title:'Error!',
                     type: 'error',
                     text: 'Error del Servidor',
@@ -77,7 +73,7 @@ class NewProvider extends Component {
         } else {
             saveProvider(provider).then((res)=>{
                 console.log('Saved', res);
-                this.mySwal.fire({
+                swal.fire({
                     title:'Proveedor Guardado!',
                     type: 'success',
                     text: res.data.company,
@@ -88,7 +84,7 @@ class NewProvider extends Component {
 
             },(err)=>{
                 console.log(err);
-                this.mySwal.fire({
+                swal.fire({
                     title:'Error!',
                     type: 'error',
                     text: 'Error del Servidor',

@@ -20,10 +20,10 @@ router.post('/saveprovider', (req, res) => {
     });
 
     newProvider.save().then((provider)=>{
-        res.send(provider);
+        res.status(200).send(provider);
     },(err)=>{
         res.status(400).send(err);
-    })
+    });
 });
 
 //Get all Providers Route

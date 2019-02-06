@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const {mongoose} = require('./db/mongoose');
 
 const providerRoutes = require('./api/providerRoutes');
+const inventoryRoutes = require('./api/inventoryRoutes');
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -20,6 +21,7 @@ app.use(allowCrossDomain);
 
 //Routes
 app.use('/providers', providerRoutes);
+app.use('/inventory', inventoryRoutes);
 
 
 app.listen(port, () => console.log(`listening on http://localhost:${port}`));

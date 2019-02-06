@@ -37,7 +37,7 @@ class Sidenav extends Component {
                 <MDBNavbarNav right>
 
                     <MDBNavItem>
-                    <MDBNavLink to="/">Existencias</MDBNavLink>
+                    <MDBNavLink to="/inventory">Existencias</MDBNavLink>
                     </MDBNavItem>
 
                     <MDBNavItem>

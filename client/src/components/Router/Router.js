@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
 
 import Sidenav from '../Sidenav/Sidenav';
-import NewItem from '../NewItem/NewItem';
+import NewItem from '../Inventory/NewItem';
 import NewProvider from '../Providers/NewProvider';
 import ProvidersTable from '../Providers/ProvidersTable';
+import InventoryTable from '../Inventory/InventoryTable';
  
 class Router extends Component {
     state = {
@@ -34,7 +35,7 @@ class Router extends Component {
                 <div>
                     <Sidenav/>
                     <Switch>
-                        <Redirect exact from="/" to="/providers" />
+                        <Redirect exact from="/" to="/inventory" />
                         
                         <Route 
                         exact 
@@ -56,10 +57,20 @@ class Router extends Component {
 
                         <Route 
                         exact 
-                        path="/newitem" 
-                        render={() => <NewItem 
-                            
-                        />}
+                        path="/inventory" 
+                        component={InventoryTable}
+                        />
+
+                        <Route 
+                        exact 
+                        path="/inventory/new" 
+                        component={NewItem}
+                        />
+
+                        <Route 
+                        exact 
+                        path="/inventory/edit/:id" 
+                        component={NewItem}
                         />
 
                     </Switch>

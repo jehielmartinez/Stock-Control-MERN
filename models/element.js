@@ -7,7 +7,7 @@ let element = mongoose.model('element', {
     provider: {
         type:  String
     },
-    unit: {
+    units: {
         type: String
     },
     min: {
@@ -24,6 +24,9 @@ let element = mongoose.model('element', {
     },
     createdAt: {
         type: Number
+    },
+    providerId: {
+        type: String
     }
 });
 
